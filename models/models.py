@@ -18,7 +18,7 @@ GPT_MODELS = [
 VICUNA_MODELS = [
     'vicuna-7b',
     'vicuna-13b',
-    'vicuna-13b-V1.3',
+    'vicuna-13b-v1.3',
 ]
 
 MODEL_LIST = {
@@ -48,7 +48,6 @@ class LLMModel(object):
         self.model = kwargs.get('model', None)
         self.infer_model = self.create_model(**kwargs)
 
-
     def create_model(self, **kwargs):
         if self.model == 'google/flan-t5-large':
             return T5Model(**kwargs)
@@ -64,7 +63,6 @@ class LLMModel(object):
     @staticmethod
     def model_list():
         return MODEL_LIST
-
 
     def __call__(self, **kwargs):
         return self.infer_model
