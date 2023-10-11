@@ -9,7 +9,10 @@ class LMMBaseModel(object):
         self.gen_len = kwargs.get('gen_len', 5)
 
     def predict(self, **kwargs):
-        return NotImplementedError("The model is not implemented!")
+        raise NotImplementedError("The model is not implemented!")
+
+    def __call__(self, input_text, **kwargs):
+        return self.predict(input_text, **kwargs)
 
     
 
@@ -25,6 +28,7 @@ class LMMModel(object):
 
     def __call__(self, **kwargs):
         return self.create_model(**kwargs)
+
 
 class T5Model(LMMBaseModel):
 
@@ -46,8 +50,8 @@ class T5Model(LMMBaseModel):
         return out
 
 
+
 if __name__ == '__main__':
-    model = LMMModel(model='google/flan-t5-large')
-    model = model()
+    model = LMMModel(model='google/flan-t5-large', gen_len=5)()
     print(type(model))
     print(model.predict('The quick brown fox jumps over the lazy dog'))
