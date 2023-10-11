@@ -1,8 +1,12 @@
 import sys
-sys.path.append('/home/jindwang/mine/promptbench/models')  # Replace with the actual path
+sys.path.append('/home/jindwang/mine/promptbench')  # Replace with the actual path
 
-from promptbench.models import LLMModel
+from models import LLMModel
 
 if __name__ == "__main__":
-    x = LLMModel(model_name="gpt2")
-    print(x.model_list())
+
+    print(LLMModel.model_list())
+    if __name__ == '__main__':
+        model = LLMModel(model='vicuna-7b',
+                        model_dir='/home/jindwang/mine/vicuna-7b')()
+        print(model('The quick brown fox jumps over the lazy dog'))

@@ -18,7 +18,7 @@ GPT_MODELS = [
 VICUNA_MODELS = [
     'vicuna-7b',
     'vicuna-13b',
-    'vicuna-13B-V1.3',
+    'vicuna-13b-V1.3',
 ]
 
 MODEL_LIST = {
@@ -42,11 +42,12 @@ class LMMBaseModel(object):
         return self.predict(input_text, **kwargs)
 
 
-class LMMModel(object):
+class LLMModel(object):
 
     def __init__(self, **kwargs):
         self.model = kwargs.get('model', None)
         self.infer_model = self.create_model(**kwargs)
+
 
     def create_model(self, **kwargs):
         if self.model == 'google/flan-t5-large':
@@ -60,8 +61,10 @@ class LMMModel(object):
         else:
             raise ValueError("The model is not supported!")
 
-    def model_list(self):
+    @staticmethod
+    def model_list():
         return MODEL_LIST
+
 
     def __call__(self, **kwargs):
         return self.infer_model
@@ -173,6 +176,6 @@ class OpenaiModel(LMMBaseModel):
 
 
 if __name__ == '__main__':
-    model = LMMModel(model='vicuna-7b',
+    model = LLMModel(model='vicuna-7b',
                      model_dir='/home/jindwang/mine/vicuna-7b')()
     print(model('The quick brown fox jumps over the lazy dog'))
