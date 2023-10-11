@@ -60,6 +60,9 @@ class LMMModel(object):
         else:
             raise ValueError("The model is not supported!")
 
+    def model_list(self):
+        return MODEL_LIST
+
     def __call__(self, **kwargs):
         return self.infer_model
 
