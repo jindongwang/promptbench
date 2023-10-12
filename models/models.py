@@ -21,11 +21,16 @@ VICUNA_MODELS = [
     'vicuna-13b-v1.3',
 ]
 
+UL2_MODELS = [
+    'google/flan-ul2',
+]
+
 MODEL_LIST = {
     't5': ['google/flan-t5-large'],
     'llama': LLAMA_MODELS,
     'gpt': GPT_MODELS,
     'vicuna': VICUNA_MODELS,
+    'ul2': UL2_MODELS,
 }
 
 
@@ -57,6 +62,8 @@ class LLMModel(object):
             return OpenaiModel(**kwargs)
         elif self.model in VICUNA_MODELS:
             return VicunaModel(**kwargs)
+        elif self.model in UL2_MODELS:
+            return UL2Model(**kwargs)
         else:
             raise ValueError("The model is not supported!")
 
@@ -83,7 +90,27 @@ class T5Model(LMMBaseModel):
         input_ids = self.tokenizer(
             input_text, return_tensors="pt").input_ids.to("cuda")
         outputs = self.pipe.generate(
-            input_ids, max_length=self.gen_len)
+            input_ids, max_new_tokens=self.gen_len)
+        out = self.tokenizer.decode(outputs[0])
+        return out
+
+
+class UL2Model(LMMBaseModel):
+
+    def __init__(self, **kwargs):
+        super(UL2Model, self).__init__(**kwargs)
+        from transformers import AutoTokenizer, T5ForConditionalGeneration
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model, device_map="auto")
+        self.pipe = T5ForConditionalGeneration.from_pretrained(
+            self.model, device_map="auto")
+
+    def predict(self, input_text):
+        input_ids = self.tokenizer(
+            input_text, return_tensors="pt").input_ids.to("cuda")
+        outputs = self.pipe.generate(
+            input_ids, max_new_tokens=self.gen_len)
         out = self.tokenizer.decode(outputs[0])
         return out
 
@@ -174,6 +201,12 @@ class OpenaiModel(LMMBaseModel):
 
 
 if __name__ == '__main__':
-    model = LLMModel(model='vicuna-7b',
-                     model_dir='/home/jindwang/mine/vicuna-7b')()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, default='vicuna-7b')
+    parser.add_argument('--model_dir', type=str,
+                        default='/home/jindwang/mine/vicuna-7b')
+    args = parser.parse_args()
+    model = LLMModel(model=args.model,
+                     model_dir=args.model_dir)()
     print(model('The quick brown fox jumps over the lazy dog'))
